@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34701.34
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BagOfManyThings", "BagOfManyThings\BagOfManyThings\BagOfManyThings.csproj", "{C982D00B-2FF9-4A59-979F-D24A29E86B9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BagOfManyThings.Client", "BagOfManyThings\BagOfManyThings.Client\BagOfManyThings.Client.csproj", "{5D8E84B5-C2DF-4C73-A5A2-8CBC0674D16A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C982D00B-2FF9-4A59-979F-D24A29E86B9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C982D00B-2FF9-4A59-979F-D24A29E86B9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C982D00B-2FF9-4A59-979F-D24A29E86B9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C982D00B-2FF9-4A59-979F-D24A29E86B9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D8E84B5-C2DF-4C73-A5A2-8CBC0674D16A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D8E84B5-C2DF-4C73-A5A2-8CBC0674D16A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D8E84B5-C2DF-4C73-A5A2-8CBC0674D16A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D8E84B5-C2DF-4C73-A5A2-8CBC0674D16A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE690088-90FF-457E-87E5-2E15491EE398}
+	EndGlobalSection
+EndGlobal
