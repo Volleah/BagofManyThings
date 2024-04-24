@@ -30,7 +30,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>//Adds Database Co
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)//Change the necessity to confirm your email
+builder.Services.AddIdentityCore<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false; // Disable 2FA requirement
+    options.User.RequireUniqueEmail = false; // Allow duplicate emails
+    options.SignIn.RequireConfirmedEmail = false; // Disable email confirmation
+})
     .AddEntityFrameworkStores<ApplicationDbContext>()//We say that we want to use EntityFramework with our ApplicationDbContext which lets us interact with our Database using C# code
     .AddSignInManager();//is necessary for signing in and signing out and adds some nice functions for that
 
