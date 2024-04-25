@@ -28,6 +28,11 @@
             <hr />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.UserName" class="form-control" aria-required="true" placeholder="Username" />
+                <label for="username">Username</label>
+                <ValidationMessage For="() => Input.UserName" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.FirstName" class="form-control" aria-required="true" placeholder="First Name" />
                 <label for="firstName">First Name</label>
                 <ValidationMessage For="() => Input.FirstName" class="text-danger" />
@@ -77,7 +82,7 @@
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
-        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        await UserStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
         var emailStore = GetEmailStore();
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
         //setting new user properties
@@ -150,5 +155,9 @@
         [Required]
         [Display(Name = "Date of Birth")]
         public DateOnly DateOfBirth { get; set; }
+
+        [Required]
+        [Display(Name = "Username")]
+        public string UserName { get; set; } = "";
     }
 }
