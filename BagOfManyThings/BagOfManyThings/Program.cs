@@ -30,14 +30,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>//Adds Database Co
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentityCore<ApplicationUser>(options =>
+builder.Services.AddIdentityCore<ApplicationUser>(options => //IdentityCore gives more extensive control
 {
     options.SignIn.RequireConfirmedAccount = false; // Disable 2FA requirement
     options.User.RequireUniqueEmail = false; // Allow duplicate emails
     options.SignIn.RequireConfirmedEmail = false; // Disable email confirmation
 })
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()//We say that we want to use EntityFramework with our ApplicationDbContext which lets us interact with our Database using C# code
     .AddSignInManager();//is necessary for signing in and signing out and adds some nice functions for that
+
+
 
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>(); //configures email sender
@@ -62,10 +65,17 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
-    .AddInteractiveWebAssemblyRenderMode()
-    .AddAdditionalAssemblies(typeof(BagOfManyThings.Client._Imports).Assembly);//add razor WASM and server side rendering functionality
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    await roleManager.CreateAsync(new IdentityRole("Admin"));
+    await roleManager.CreateAsync(new IdentityRole("User"));
+}
+
+    app.MapRazorComponents<App>()
+        .AddInteractiveServerRenderMode()
+        .AddInteractiveWebAssemblyRenderMode()
+        .AddAdditionalAssemblies(typeof(BagOfManyThings.Client._Imports).Assembly);//add razor WASM and server side rendering functionality
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();//gives you the option to add authentication endpoints like register, login, 2fa, manage your acount etc
