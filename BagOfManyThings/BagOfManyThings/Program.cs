@@ -69,7 +69,8 @@ using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     await roleManager.CreateAsync(new IdentityRole("Admin"));
-    await roleManager.CreateAsync(new IdentityRole("User"));
+    await roleManager.CreateAsync(new IdentityRole("Player"));
+    await roleManager.CreateAsync(new IdentityRole("DM"));
 }
 
     app.MapRazorComponents<App>()

@@ -1,0 +1,56 @@
+﻿@page "/RolePicker"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using BagOfManyThings.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityUserAccessor UserAccessor
+@inject NavigationManager NavigationManager
+    
+
+
+<h1>Choose Your Role</h1>
+
+<div>
+    <button>
+        Player
+    </button>
+    <button>
+        Dungeon Master
+    </button>
+</div>
+@if (errorMessage != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @errorMessage
+    </div>
+}
+
+
+@code {
+
+    private ApplicationUser user = default!;
+    private string? errorMessage;
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private async Task AssignRole(string role)
+    {
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        if (user == null)
+        {
+            errorMessage = "Please log into your account first.";
+            return;
+        }
+
+        await UserManager.AddToRoleAsync(user, role); // Assign the role
+
+
+        // signing in the user again to update their claims
+        await SignInManager.SignInAsync(user, isPersistent: false);
+
+        NavigationManager.NavigateTo("/");
+    }
+}

@@ -62,7 +62,6 @@
                 <label for="confirm-password">Confirm Password</label>
                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
             </div>
-
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </EditForm>
     </div>
@@ -75,7 +74,7 @@
     private InputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; }
+    private string? ReturnUrl { get; set; } = "/RolePicker";
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
@@ -89,6 +88,7 @@
         user.FirstName = Input.FirstName;
         user.LastName = Input.LastName;
         user.DateOfBirth = Input.DateOfBirth;
+
         var result = await UserManager.CreateAsync(user, Input.Password);
 
         if (!result.Succeeded)
@@ -126,6 +126,7 @@
         return (IUserEmailStore<ApplicationUser>)UserStore;
     }
 
+
     private sealed class InputModel
     {
         [Required]  
@@ -159,5 +160,6 @@
         [Required]
         [Display(Name = "Username")]
         public string UserName { get; set; } = "";
+
     }
 }
