@@ -11,46 +11,68 @@
     
 
 
+<AuthorizeView>
+    <Authorized>
 <h1>Choose Your Role</h1>
-
 <div>
-    <button>
+    <button class="btn-drop" @onclick="AssignPlayer">
         Player
     </button>
-    <button>
+    <button class="btn-drop" @onclick="AssignDM">
         Dungeon Master
     </button>
 </div>
-@if (errorMessage != null)
-{
-    <div class="alert alert-danger" role="alert">
-        @errorMessage
-    </div>
-}
-
+    </Authorized>
+    <NotAuthorized>
+        <h1>
+            Please log into your account.
+        </h1>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
 
-    private ApplicationUser user = default!;
-    private string? errorMessage;
+    private ApplicationUser? user = default;
+
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
-    private async Task AssignRole(string role)
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+    }
+
+
+
+    private async Task AssignPlayer()
+    {
+        if (user == null)
+        {
+            return;
+        }
+
+        await UserManager.AddToRoleAsync(user, "Player"); // Assign the role
+
+        // signing in the user again to update their claims
+        await SignInManager.RefreshSignInAsync(user);
+
+        NavigationManager.NavigateTo("/");//change this to Player specific website
+    }
+    private async Task AssignDM()
     {
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         if (user == null)
         {
-            errorMessage = "Please log into your account first.";
             return;
         }
 
-        await UserManager.AddToRoleAsync(user, role); // Assign the role
+        await UserManager.AddToRoleAsync(user, "DM"); // Assign the role
 
 
         // signing in the user again to update their claims
-        await SignInManager.SignInAsync(user, isPersistent: false);
+        await SignInManager.RefreshSignInAsync(user);
 
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/");//change this to DM specific website
     }
 }
