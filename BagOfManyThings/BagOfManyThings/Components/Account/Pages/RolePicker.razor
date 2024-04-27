@@ -24,9 +24,11 @@
 </div>
     </Authorized>
     <NotAuthorized>
+        <div>
         <h1>
             Please log into your account.
         </h1>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
 
@@ -38,15 +40,12 @@
     private HttpContext HttpContext { get; set; } = default!;
 
 
-    protected override async Task OnInitializedAsync()
-    {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-    }
-
 
 
     private async Task AssignPlayer()
     {
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+
         if (user == null)
         {
             return;
@@ -62,6 +61,7 @@
     private async Task AssignDM()
     {
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+
         if (user == null)
         {
             return;
