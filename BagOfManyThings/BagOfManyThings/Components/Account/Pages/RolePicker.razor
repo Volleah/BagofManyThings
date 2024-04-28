@@ -8,19 +8,16 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject NavigationManager NavigationManager
-    
 
+
+<StatusMessage Message="@errorMessage" />
 
 <AuthorizeView>
     <Authorized>
 <h1>Choose Your Role</h1>
 <div>
-    <button class="btn-drop" @onclick="AssignPlayer">
-        Player
-    </button>
-    <button class="btn-drop" @onclick="AssignDM">
-        Dungeon Master
-    </button>
+            <button class="btn btn-primary" @onclick="AssignPlayer">Player</button>
+            <button class="btn btn-primary" @onclick="AssignDM">Dungeon Master</button>
 </div>
     </Authorized>
     <NotAuthorized>
@@ -36,43 +33,46 @@
 
     private ApplicationUser? user = default;
 
+    private string? errorMessage = null;
+
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
 
 
 
 
-    private async Task AssignPlayer()
+    public async Task AssignPlayer()
     {
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
-        if (user == null)
+        var result = await UserManager.AddToRoleAsync(user, "Player"); // Assign the role
+        if (!result.Succeeded)
         {
+            Console.WriteLine("Could not assign Player role.");
             return;
         }
+  
+            // signing in the user again to update their claims
+            await SignInManager.RefreshSignInAsync(user);
 
-        await UserManager.AddToRoleAsync(user, "Player"); // Assign the role
-
-        // signing in the user again to update their claims
-        await SignInManager.RefreshSignInAsync(user);
-
-        NavigationManager.NavigateTo("/");//change this to Player specific website
+            NavigationManager.NavigateTo("/");//change this to Player specific website
+        
     }
-    private async Task AssignDM()
+    public async Task AssignDM()
     {
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
 
-        if (user == null)
+        var result = await UserManager.AddToRoleAsync(user, "DM"); // Assign the role
+        if(!result.Succeeded)
         {
+            Console.WriteLine("Could not assign DM role.");
             return;
         }
-
-        await UserManager.AddToRoleAsync(user, "DM"); // Assign the role
-
-
+      
         // signing in the user again to update their claims
         await SignInManager.RefreshSignInAsync(user);
 
         NavigationManager.NavigateTo("/");//change this to DM specific website
-    }
+        
+        }
 }
