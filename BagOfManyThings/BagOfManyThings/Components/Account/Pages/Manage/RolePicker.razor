@@ -1,4 +1,5 @@
-﻿@page "/RolePicker"
+﻿@page "/Account/Manage/RolePicker"
+@rendermode InteractiveServer
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
@@ -7,11 +8,18 @@
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
+@inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
+@inject RoleManager<IdentityRole> RoleManager
 
 
-<StatusMessage Message="@errorMessage" />
 
+<PageTitle>Role Picker</PageTitle>
+
+
+
+<div class="row">
+    <div class="col-md-4">
 <AuthorizeView>
     <Authorized>
 <h1>Choose Your Role</h1>
@@ -19,6 +27,14 @@
             <button class="btn btn-primary" @onclick="AssignPlayer">Player</button>
             <button class="btn btn-primary" @onclick="AssignDM">Dungeon Master</button>
 </div>
+
+<h2>Available Roles</h2>
+                <ul>
+                    @foreach (var role in roles)
+                    {
+                        <li>@role.Name</li>
+                    }
+                </ul>
     </Authorized>
     <NotAuthorized>
         <div>
@@ -28,30 +44,41 @@
         </div>
     </NotAuthorized>
 </AuthorizeView>
+</div>
+</div>
 
 @code {
+    [Inject]
+    private AuthenticationStateProvider AuthenticationState { get; set; }
 
-    private ApplicationUser? user = default;
+    IList<IdentityRole> roles;
 
-    private string? errorMessage = null;
+    private ApplicationUser user = default!;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+    protected override async Task OnInitializedAsync()
+    {
+        //put roles into the roles IList
+        var authState = await AuthenticationState.GetAuthenticationStateAsync();
+        var authUser = authState.User;
+        user = await UserManager.GetUserAsync(authUser);
 
-
-
-
+        if (user == null)
+        {
+            Logger.LogInformation("User is null.");
+            return; // Or handle the null user case appropriately
+        }
+     }
+    
     public async Task AssignPlayer()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-
         var result = await UserManager.AddToRoleAsync(user, "Player"); // Assign the role
         if (!result.Succeeded)
         {
-            Console.WriteLine("Could not assign Player role.");
+            Logger.LogInformation("Failed to assign Player role.");
             return;
         }
   
+                    Logger.LogInformation("Assigned Player role.");
             // signing in the user again to update their claims
             await SignInManager.RefreshSignInAsync(user);
 
@@ -60,19 +87,18 @@
     }
     public async Task AssignDM()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-
         var result = await UserManager.AddToRoleAsync(user, "DM"); // Assign the role
         if(!result.Succeeded)
         {
-            Console.WriteLine("Could not assign DM role.");
+            Logger.LogInformation("Failed to assign DM role.");
             return;
         }
       
+        Logger.LogInformation("Assigned DM role.");
+
         // signing in the user again to update their claims
         await SignInManager.RefreshSignInAsync(user);
-
-        NavigationManager.NavigateTo("/");//change this to DM specific website
+        NavigationManager.NavigateTo("/GameBoard");//change this to DM specific website
         
         }
 }
