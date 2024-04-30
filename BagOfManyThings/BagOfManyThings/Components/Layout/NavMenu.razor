@@ -16,28 +16,27 @@
         <AuthorizeView Roles="DM">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="GameBoard" Match="NavLinkMatch.All">
+                    <NavLink class="nav-link" href="DMBoard" Match="NavLinkMatch.All">
                         <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Game Board
                     </NavLink>
                 </div>
             </Authorized>
-            </AuthorizeView>
+        </AuthorizeView>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
-        <AuthorizeView Roles="DM, Player">
-            <NotAuthorized>
+        <AuthorizeView Roles="Player">
+            <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/Account/Manage/RolePicker" Match="NavLinkMatch.All">
-                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Pick your role!
+                    <NavLink class="nav-link" href="JoinCampaign" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Join Campaign
                     </NavLink>
                 </div>
-            </NotAuthorized>
+            </Authorized>
         </AuthorizeView>
         <AuthorizeView>
-
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="Account/Manage">

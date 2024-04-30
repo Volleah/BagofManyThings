@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Markdig;
 
-namespace BagOfManyThings.Client.Boards.MasterBoard
+namespace BagOfManyThings.Components.Boards
 {
     public class MarkdownEditorBase : ComponentBase
     {

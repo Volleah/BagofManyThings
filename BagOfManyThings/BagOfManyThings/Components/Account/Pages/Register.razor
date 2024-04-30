@@ -14,6 +14,7 @@
 @inject ILogger<Register> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
+@inject RoleManager<IdentityRole> RoleManager
 
 <PageTitle>Register</PageTitle>
 
@@ -28,7 +29,7 @@
             <hr />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.UserName" class="form-control" aria-required="true" placeholder="Username" />
+                <InputText @bind-Value="Input.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
                 <label for="username">Username</label>
                 <ValidationMessage For="() => Input.UserName" class="text-danger" />
             </div>
@@ -48,7 +49,7 @@
                 <ValidationMessage For="() => Input.DateOfBirth" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                <InputText @bind-Value="Input.Email" class="form-control" aria-required="true" placeholder="name@example.com" />
                 <label for="email">Email</label>
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
@@ -62,6 +63,17 @@
                 <label for="confirm-password">Confirm Password</label>
                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
             </div>
+            <div class="form-floating mb-3">
+                <InputSelect @bind-Value="Input.Role" class="form-control" aria-required="true">
+                    <option value="">Select Role</option>
+                    <option value="DM">Dungeon Master</option>
+                    <option value="Player">Player</option>
+                </InputSelect>
+                <label for="role">Role</label>
+
+                <ValidationMessage For="@(() => Input.Role)" />
+
+</div>
             <button type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </EditForm>
     </div>
@@ -74,9 +86,12 @@
     private InputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; } = "/RolePicker";
+    private string? ReturnUrl { get; set; }
+
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
+
 
     public async Task RegisterUser(EditContext editContext)
     {
@@ -92,16 +107,33 @@
 
         var result = await UserManager.CreateAsync(user, Input.Password);
 
-        if (!result.Succeeded)
+
+        if (!result.Succeeded || Input.Role==null)
         {
             identityErrors = result.Errors;
             return;
         }
-
+        var addUserRoleResult = await UserManager.AddToRoleAsync(user, Input.Role);
+        if(!addUserRoleResult.Succeeded)
+        {
+            identityErrors = result.Errors;
+            return;
+        }
         Logger.LogInformation("User created a new account with password.");
 
 
+
         await SignInManager.SignInAsync(user, isPersistent: false);
+
+
+        if (Input.Role == "DM")
+        {
+            ReturnUrl = "DMBoard";
+        }
+        else
+        {
+            ReturnUrl = "JoinCampaign";
+        }
         RedirectManager.RedirectTo(ReturnUrl);
     }
 
@@ -162,5 +194,8 @@
         [Display(Name = "Username")]
         public string UserName { get; set; } = "";
 
+        [Required]
+        [Display(Name = "Role")]
+        public string? Role { get; set; } = null;
     }
 }

@@ -1,8 +1,6 @@
-using BagOfManyThings.Client.Pages;
 using BagOfManyThings.Components;
 using BagOfManyThings.Components.Account;
 using BagOfManyThings.Data;
-using KristofferStrube.Blazor.FileSystem;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +39,6 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => //IdentityCore give
     .AddEntityFrameworkStores<ApplicationDbContext>()//We say that we want to use EntityFramework with our ApplicationDbContext which lets us interact with our Database using C# code
     .AddSignInManager();//is necessary for signing in and signing out and adds some nice functions for that
 
-builder.Services.AddStorageManagerService();
 
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>(); //configures email sender
