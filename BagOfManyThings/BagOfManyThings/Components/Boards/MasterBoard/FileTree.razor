@@ -1,0 +1,81 @@
+﻿@inherits MarkdownEditorBase
+
+@using System.IO
+@using BagOfManyThings.Components.Boards
+
+@inject FileService FileSystem
+
+<div class="row">
+    <div class="col-md-6">
+        @if (Directory.Exists(basePath))
+        {
+            <ul class="file-tree">
+                @foreach (var item in Directory.EnumerateFileSystemEntries(basePath))
+                {
+                    <li>
+                        @if (Directory.Exists(item))
+                        {
+                            <span class="folder-icon">@Path.GetFileName(item)</span>
+                            <FileTree basePath="@item" />
+                        }
+                        else
+                        {
+                            <span class="file-icon">@Path.GetFileName(item)</span>
+                            <button class="btn-link" @onclick="() => EditFile(item)">Edit</button>
+                            <button class="btn-info" @onclick="() => ReadFile(item)">Read</button>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Directory not found.</p>
+        }
+    </div>
+    <div class="col-md-6">
+        @if (selectedFile != null)
+        {
+            <textarea class="form-control" @bind="fileContent"></textarea>
+            <button class="btn btn-primary" @onclick="SaveFile">Save</button>
+        }
+
+        @if (showPreview)
+        {
+            <MarkdownEditorBase Body="@fileContent">
+            <div class="col-6">
+                @((MarkupString)Preview)
+            </div>
+            </MarkdownEditorBase>
+        }
+    </div>
+</div>
+
+
+    @code {
+        [Parameter]
+        public string? basePath { get; set; }
+
+        private string? selectedFile;
+        private string? fileContent;
+        private bool showPreview = false; 
+        
+        private void EditFile(string filePath)
+        {
+            selectedFile = filePath;
+            fileContent = File.ReadAllText(filePath);
+        }
+
+        private void ReadFile(string filePath)
+        {
+            fileContent = File.ReadAllText(filePath);
+            showPreview = !showPreview;//toggle
+        }
+        private void SaveFile()
+        {
+            if (selectedFile == null)
+                return;
+            File.WriteAllText(selectedFile, fileContent);
+            selectedFile = null;
+        }
+}

@@ -65,3 +65,11 @@ h1:focus {
     .file-icon::before {
         content: "\1F4C4"; /* Unicode for file icon */
     }
+
+.row {
+    display: flex;
+    flex-direction: row; /* Arrange items horizontally */
+    flex-wrap: wrap; /* Allow items to wrap to the next line if needed */
+    margin: 0; /* Reset default margins */
+    padding: 0; /* Reset default padding */
+}

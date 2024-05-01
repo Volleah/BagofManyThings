@@ -1,5 +1,6 @@
 using BagOfManyThings.Components;
 using BagOfManyThings.Components.Account;
+using BagOfManyThings.Components.Boards;
 using BagOfManyThings.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,10 @@ builder.Services.AddCascadingAuthenticationState();//important for components to
 builder.Services.AddScoped<IdentityUserAccessor>();//This is what helps us reach the user and retrieve info about logged in users
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, PersistingRevalidatingAuthenticationStateProvider>();//Maintains authentication on client and server side
+builder.Services.AddScoped<FileService>(); //adds custom fileservice that is in Components/Boards
+
+
+
 
 builder.Services.AddAuthentication(options =>//Configures Atuhentication Options and uses the default when a specific scheme isn't requested
     {

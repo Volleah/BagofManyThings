@@ -1,0 +1,56 @@
+﻿@page "/DMBoard"
+@inherits MarkdownEditorBase
+
+@using System.IO
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Identity
+@using BagOfManyThings.Data
+@using BagOfManyThings.Components.Account
+
+
+@inject FileService FileService
+@inject IdentityUserAccessor UserAccessor
+@inject UserManager<ApplicationUser> UserManager
+@inject NavigationManager NavigationManager
+
+
+<h3>Dungeon Master Board</h3>
+<div class="row">
+
+    <div class="col-6">
+        @if (!Directory.Exists(basePath))
+        {
+            <button class="btn btn-primary" @onclick="CreateUserCampaign">Create Campaign Folder</button>
+        }
+        else
+        {
+            <button class="btn btn-secondary" @onclick="@(() => NavigationManager.NavigateTo("/DMBoard/FileDirectory"))">Open Campaign Files</button>
+        }
+    </div>
+</div>
+
+@code
+{
+    private ApplicationUser user = default!;
+    private string? userId;
+    private string? basePath;
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        userId = await UserManager.GetUserIdAsync(user);
+        basePath = FileService.GetUserDirectoryPath(userId);
+    }
+
+    private void CreateUserCampaign()
+    {
+        if (userId == null)
+            return;
+        FileService.CreateUserDirectory(userId);
+        NavigationManager.NavigateTo("/DMBoard/FileDirectory");
+    }
+}
+

@@ -1,74 +1,49 @@
-﻿@page "/MasterBoard/FileDirectory"
-
+﻿@page "/DMBoard/FileDirectory"
 
 @using System.IO
+@using BagOfManyThings.Components.Account
+@using BagOfManyThings.Data
+@using Microsoft.AspNetCore.Identity
 
-@inject FileSystem FileSystem
+@inject FileService FileService
+@inject UserManager<ApplicationUser> UserManager
+@inject IdentityUserAccessor UserAccessor
+
 
 <PageTitle>File System - Directory</PageTitle>
 
-<h3>Directory Contents: @CurrentDirectory</h3>
+<h3>Campaign Content</h3>
 
+<AuthorizeView>
+    <NotAuthorized>
+        <h1 class="text-danger">Access denied</h1>
+        <p class="text-danger">Please log into your account.</p>
+    </NotAuthorized>
+    <Authorized>
 
-@if (DirectoryContents != null)
-{
-    <ul>
-        @foreach (var item in DirectoryContents)
-        {
-            <li>
-                @if (item.IsDirectory)
-                {
-                    <a href="" @onclick="() => NavigateToDirectory(item.Path)">
-                        <span class="oi oi-folder"></span> @item.Name
-                    </a>
-                }
-                else
-                {
-                    <span class="oi oi-file"></span> @item.Name
-                }
-            </li>
-        }
-    </ul>
-}
+        <FileTree basePath="@basePath"/>
+
+    </Authorized>
+    <Authorizing>
+        <p>Loading your board...</p>
+    </Authorizing>
+</AuthorizeView>
 
 @code {
-    [Parameter]
-    public string CurrentDirectory { get; set; }
 
-    private List<FileSystemItem> DirectoryContents;
+    private ApplicationUser user = default!;
+    private string? userId;
+    private string? basePath;
 
-    protected override void OnParametersSet()
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
     {
-        LoadDirectoryContents();
+        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
+        userId = await UserManager.GetUserIdAsync(user);
+        basePath = FileService.GetUserDirectoryPath(userId);
     }
 
-    private void LoadDirectoryContents()
-    {
-        DirectoryContents = new List<FileSystemItem>();
 
-        // Assuming you have a method to get the current user ID
-        var userId = GetCurrentUserId();
-        var userDirectory = FileSystem.GetUserDirectoryPath(userId);
-
-        if (CurrentDirectory == null)
-        {
-            CurrentDirectory = userDirectory;
-        }
-
-        foreach (var directory in Directory.EnumerateDirectories(CurrentDirectory))
-        {
-            DirectoryContents.Add(new FileSystemItem(Path.GetFileName(directory), directory, true));
-        }
-
-        foreach (var file in Directory.EnumerateFiles(CurrentDirectory))
-        {
-            DirectoryContents.Add(new FileSystemItem(Path.GetFileName(file), file, false));
-        }
-    }
-
-    private void NavigateToDirectory(string directoryPath)
-    {
-        CurrentDirectory = directoryPath;
-        LoadDirectoryContents();
-    }
 }

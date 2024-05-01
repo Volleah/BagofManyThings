@@ -60,7 +60,7 @@
     private InputModel Input { get; set; } = new();
 
     [SupplyParameterFromQuery]
-    private string? ReturnUrl { get; set; } = "/RolePicker";
+    private string? ReturnUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

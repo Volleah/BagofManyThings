@@ -1,16 +1,17 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using BagOfManyThings.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using System.IO;
 
-    namespace BagOfManyThings.Components.Boards
-    {
-        public class FileSystem
+namespace BagOfManyThings.Components.Boards
+{
+    public class FileService
     {
 
         private readonly IWebHostEnvironment _env;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public FileSystem(IWebHostEnvironment env, UserManager<IdentityUser> userManager)
+        public FileService(IWebHostEnvironment env, UserManager<ApplicationUser> userManager)
         {
             _env = env;
             _userManager = userManager;
@@ -50,4 +51,5 @@ using System.IO;
                 Directory.Delete(userDirectoryPath, true);
             }
         }
+    }
 }
