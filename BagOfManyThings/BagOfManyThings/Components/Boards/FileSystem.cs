@@ -6,6 +6,7 @@ using System.IO;
     {
         public class FileSystem
     {
+
         private readonly IWebHostEnvironment _env;
         private readonly UserManager<IdentityUser> _userManager;
 
@@ -22,17 +23,31 @@ using System.IO;
             return userDirectory;
         }
 
-        public void CreateUserDirectory(string userId)
+        public void CreateUserDirectory(string userId) //creates a UserDirectory in DMData (Create Campaign basically)
         {
             var userDirectoryPath = GetUserDirectoryPath(userId);
             Directory.CreateDirectory(userDirectoryPath);
         }
+        public void CreateFolderInUserDirectory(string userId, string folderName)//creates a folder in the userId thing 
+        {
+            var userDirectoryPath = GetUserDirectoryPath(userId);
+            var folderPath = Path.Combine(userDirectoryPath, folderName);
+            Directory.CreateDirectory(userDirectoryPath);
+        }
 
-        public async Task CreateFileAsync(string userId, string fileName, string content)
+        public async Task CreateMarkdownFileAsync(string userId, string fileName, string content)//creates a Markdown file
         {
             var userDirectoryPath = GetUserDirectoryPath(userId);
             var filePath = Path.Combine(userDirectoryPath, fileName + ".md");
             await File.WriteAllTextAsync(filePath, content);
         }
-    }
+        public void DeleteUserDirectory(string userId) //deletes campaign
+        {
+            var userDirectoryPath = GetUserDirectoryPath(userId);
+
+            if (Directory.Exists(userDirectoryPath))
+            {
+                Directory.Delete(userDirectoryPath, true);
+            }
+        }
 }

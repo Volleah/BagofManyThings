@@ -1,9 +1,74 @@
 ﻿@page "/MasterBoard/FileDirectory"
 
 
+@using System.IO
+
+@inject FileSystem FileSystem
+
 <PageTitle>File System - Directory</PageTitle>
 
-<h2>File Management</h2>
-<p>
-    In this sample we go through all directories and files in the <b>Origin Private File System</b> recursively and enable you to delete files and directories.
-</p>
+<h3>Directory Contents: @CurrentDirectory</h3>
+
+
+@if (DirectoryContents != null)
+{
+    <ul>
+        @foreach (var item in DirectoryContents)
+        {
+            <li>
+                @if (item.IsDirectory)
+                {
+                    <a href="" @onclick="() => NavigateToDirectory(item.Path)">
+                        <span class="oi oi-folder"></span> @item.Name
+                    </a>
+                }
+                else
+                {
+                    <span class="oi oi-file"></span> @item.Name
+                }
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public string CurrentDirectory { get; set; }
+
+    private List<FileSystemItem> DirectoryContents;
+
+    protected override void OnParametersSet()
+    {
+        LoadDirectoryContents();
+    }
+
+    private void LoadDirectoryContents()
+    {
+        DirectoryContents = new List<FileSystemItem>();
+
+        // Assuming you have a method to get the current user ID
+        var userId = GetCurrentUserId();
+        var userDirectory = FileSystem.GetUserDirectoryPath(userId);
+
+        if (CurrentDirectory == null)
+        {
+            CurrentDirectory = userDirectory;
+        }
+
+        foreach (var directory in Directory.EnumerateDirectories(CurrentDirectory))
+        {
+            DirectoryContents.Add(new FileSystemItem(Path.GetFileName(directory), directory, true));
+        }
+
+        foreach (var file in Directory.EnumerateFiles(CurrentDirectory))
+        {
+            DirectoryContents.Add(new FileSystemItem(Path.GetFileName(file), file, false));
+        }
+    }
+
+    private void NavigateToDirectory(string directoryPath)
+    {
+        CurrentDirectory = directoryPath;
+        LoadDirectoryContents();
+    }
+}
