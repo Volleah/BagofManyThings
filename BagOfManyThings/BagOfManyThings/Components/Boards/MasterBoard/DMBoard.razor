@@ -1,5 +1,6 @@
-﻿@page "/DMBoard"
+﻿@page "/Boards/MasterBoard"
 @inherits MarkdownEditorBase
+@rendermode InteractiveServer
 
 @using System.IO
 @using Microsoft.AspNetCore.Components
@@ -8,10 +9,9 @@
 @using BagOfManyThings.Components.Account
 
 
-@inject FileService FileService
-@inject IdentityUserAccessor UserAccessor
-@inject UserManager<ApplicationUser> UserManager
 @inject NavigationManager NavigationManager
+@inject FileService FileService
+@inject AuthenticationStateProvider authenticationStateProvider
 
 
 <h3>Dungeon Master Board</h3>
@@ -23,33 +23,43 @@
         }
         else
         {
-            <button class="btn btn-secondary" @onclick="@(() => NavigationManager.NavigateTo("/DMBoard/FileDirectory"))">Open Campaign Files</button>
+            <button class="btn btn-secondary" @onclick="@(() => NavigationManager.NavigateTo("/Boards/MasterBoard/FileDirectory"))">Open Campaign Files</button>
         }
     </div>
 </div>
 
 @code
 {
-    private ApplicationUser user = default!;
-    private string? userId;
+    private string? UserId;
     private string? basePath;
 
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
 
     protected override async Task OnInitializedAsync()
     {
-        user = await UserAccessor.GetRequiredUserAsync(HttpContext);
-        userId = await UserManager.GetUserIdAsync(user);
-        basePath = FileService.GetUserDirectoryPath(userId);
+        var authestate = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = (authestate).User;
+        UserId = user.Claims.FirstOrDefault().Value;
+        if (UserId == null)
+        {
+            Console.WriteLine("Not logged in");
+            return;
+        }
+        basePath = FileService.GetUserDirectoryPath(UserId);
     }
 
     private void CreateUserCampaign()
     {
-        if (userId == null)
-            return;
-        FileService.CreateUserDirectory(userId);
-        NavigationManager.NavigateTo("/DMBoard/FileDirectory");
+        if (UserId == null)
+        {
+            Console.WriteLine("UserId is null");
+        }
+        else
+        {
+            Console.WriteLine("UserId is {0}", UserId);
+            FileService.CreateUserDirectory(UserId);
+            NavigationManager.NavigateTo("/Boards/MasterBoard/FileDirectory");
+        }
+
     }
 }
 
