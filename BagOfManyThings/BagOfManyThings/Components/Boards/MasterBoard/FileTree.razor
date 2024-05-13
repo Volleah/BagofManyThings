@@ -5,17 +5,25 @@
 
 @inject FileService FileSystem
 
+
+
 <div class="row">
     <div class="col-md-6">
         @if (Directory.Exists(basePath))
         {
+            <p>Your directory:</p>
+            <input @bind="folderName" name="Name"/>
+            <button class="btn-link" @onclick="() => CreateFolder(folderName)">Create Folder</button>
             <ul class="file-tree">
                 @foreach (var item in Directory.EnumerateFileSystemEntries(basePath))
                 {
                     <li>
                         @if (Directory.Exists(item))
                         {
-                            <span class="folder-icon">@Path.GetFileName(item)</span>
+                            <span class="folder-icon">
+
+                                @Path.GetFileName(item)
+                            </span>
                             <FileTree basePath="@item" />
                         }
                         else
@@ -52,14 +60,26 @@
 </div>
 
 
-    @code {
-        [Parameter]
-        public string? basePath { get; set; }
+@code {
+    [Parameter]
+    public string? userId { get; set; }
 
-        private string? selectedFile;
-        private string? fileContent;
-        private bool showPreview = false; 
-        
+    private string? basePath;
+
+    private string folderName = "New Name";
+
+    private string? selectedFile;
+    private string? fileContent;
+    private bool showPreview = false; 
+
+
+
+
+
+    private void CreateFolder(string filePath)
+    {
+        FileSystem.CreateFolderInDirectory(directoryPath, folderName);
+    }
         private void EditFile(string filePath)
         {
             selectedFile = filePath;
@@ -78,4 +98,8 @@
             File.WriteAllText(selectedFile, fileContent);
             selectedFile = null;
         }
+    private void CreateFolderInDirectory(string directoryPath)
+    {
+    }
+
 }

@@ -22,7 +22,7 @@
     </NotAuthorized>
     <Authorized>
 
-        <FileTree basePath="@basePath"/>
+        <FileTree userId="@UserId"/>
 
     </Authorized>
     <Authorizing>
@@ -34,7 +34,6 @@
 
     private ApplicationUser user = default!;
     private string? UserId;
-    private string? basePath;
 
     [CascadingParameter]
     private HttpContext HttpContext { get; set; } = default!;
@@ -44,7 +43,6 @@
         var authestate = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = (authestate).User;
         UserId = user.Claims.FirstOrDefault().Value;
-        basePath = FileService.GetUserDirectoryPath(UserId);
     }
 
 

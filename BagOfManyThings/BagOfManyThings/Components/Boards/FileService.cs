@@ -36,6 +36,31 @@ namespace BagOfManyThings.Components.Boards
             Directory.CreateDirectory(userDirectoryPath);
         }
 
+        public async Task CreateFileInDirectoryAsync(string directoryPath, string fileName, string content)
+        {
+            if (!Directory.Exists(directoryPath))
+                throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
+
+            var filePath = Path.Combine(directoryPath, fileName);
+
+            if (File.Exists(filePath))
+                throw new IOException($"File already exists: {filePath}");
+
+            await File.WriteAllTextAsync(filePath, content);
+        }
+        public void CreateFolderInDirectory(string directoryPath, string folderName)
+        {
+            if (!Directory.Exists(directoryPath))
+                throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
+
+            var folderPath = Path.Combine(directoryPath, folderName);
+
+            if (Directory.Exists(folderPath))
+                throw new IOException($"Folder already exists: {folderPath}");
+
+            Directory.CreateDirectory(folderPath);
+        }
+
         public async Task CreateMarkdownFileAsync(string userId, string fileName, string content)//creates a Markdown file
         {
             var userDirectoryPath = GetUserDirectoryPath(userId);
