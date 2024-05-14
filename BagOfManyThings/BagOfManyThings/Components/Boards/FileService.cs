@@ -51,9 +51,14 @@ namespace BagOfManyThings.Components.Boards
         public void CreateFolderInDirectory(string directoryPath, string folderName)
         {
             if (!Directory.Exists(directoryPath))
-                throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
-
-            var folderPath = Path.Combine(directoryPath, folderName);
+            {
+                Console.WriteLine("Directory doesn't exists.");
+                return;
+            }
+            if(Directory.Exists(Path.Combine(directoryPath,folderName))) { Console.WriteLine("Directory already exists.");
+                return;
+            }
+            string folderPath = Path.Combine(directoryPath, folderName);
 
             if (Directory.Exists(folderPath))
                 throw new IOException($"Folder already exists: {folderPath}");
@@ -61,11 +66,10 @@ namespace BagOfManyThings.Components.Boards
             Directory.CreateDirectory(folderPath);
         }
 
-        public async Task CreateMarkdownFileAsync(string userId, string fileName, string content)//creates a Markdown file
+        public async Task CreateMarkdownFileAsync(string filePath, string fileName)//creates a Markdown file
         {
-            var userDirectoryPath = GetUserDirectoryPath(userId);
-            var filePath = Path.Combine(userDirectoryPath, fileName + ".md");
-            await File.WriteAllTextAsync(filePath, content);
+            filePath = Path.Combine(filePath, fileName + ".md");
+            await File.WriteAllTextAsync(filePath, null);
         }
         public void DeleteUserDirectory(string userId) //deletes campaign
         {

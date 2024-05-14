@@ -12,25 +12,34 @@
         @if (Directory.Exists(basePath))
         {
             <p>Your directory:</p>
-            <input @bind="folderName" name="Name"/>
-            <button class="btn-link" @onclick="() => CreateFolder(folderName)">Create Folder</button>
+            <input class="" @bind="folderName" name="Name"/>
+            <button class="btn btn-success btn-sm" title="Add New File" @onclick="() => FileSystem.CreateMarkdownFileAsync(basePath, folderName)">
+                <!--!-->
+                ➕🗒
+            </button>
+            <button class="btn btn-success btn-sm" title="Add New Folder" @onclick="() => FileSystem.CreateFolderInDirectory(basePath, folderName)">
+                <!--!-->
+                ➕📁
+            </button>
             <ul class="file-tree">
                 @foreach (var item in Directory.EnumerateFileSystemEntries(basePath))
                 {
                     <li>
                         @if (Directory.Exists(item))
                         {
-                            <span class="folder-icon">
-
+                            <div class="item-div">
                                 @Path.GetFileName(item)
-                            </span>
                             <FileTree basePath="@item" />
+                            </div>
                         }
                         else
                         {
-                            <span class="file-icon">@Path.GetFileName(item)</span>
+                            <div class="item-div">
+                                @Path.GetFileName(item)
                             <button class="btn-link" @onclick="() => EditFile(item)">Edit</button>
                             <button class="btn-info" @onclick="() => ReadFile(item)">Read</button>
+                            </div>
+
                         }
                     </li>
                 }
@@ -61,10 +70,10 @@
 
 
 @code {
-    [Parameter]
-    public string? userId { get; set; }
 
-    private string? basePath;
+
+    [Parameter]
+    public string? basePath { get; set; }
 
     private string folderName = "New Name";
 
@@ -74,12 +83,6 @@
 
 
 
-
-
-    private void CreateFolder(string filePath)
-    {
-        FileSystem.CreateFolderInDirectory(directoryPath, folderName);
-    }
         private void EditFile(string filePath)
         {
             selectedFile = filePath;
@@ -98,8 +101,5 @@
             File.WriteAllText(selectedFile, fileContent);
             selectedFile = null;
         }
-    private void CreateFolderInDirectory(string directoryPath)
-    {
-    }
 
 }
