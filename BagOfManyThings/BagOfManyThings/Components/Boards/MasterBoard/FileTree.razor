@@ -1,17 +1,16 @@
-﻿@inherits MarkdownEditorBase
-
+﻿
 @using System.IO
 @using BagOfManyThings.Components.Boards
+@using Markdig
 
 @inject FileService FileSystem
 
 
 
-<div class="row">
-    <div class="col-md-6">
+<div>
+    <div>
         @if (Directory.Exists(basePath))
         {
-            <p>Your directory:</p>
             <input class="" @bind="folderName" name="Name"/>
             <button class="btn btn-success btn-sm" title="Add New File" @onclick="() => FileSystem.CreateMarkdownFileAsync(basePath, folderName)">
                 <!--!-->
@@ -59,11 +58,9 @@
 
         @if (showPreview)
         {
-            <MarkdownEditorBase Body="@fileContent">
-            <div class="col-6">
-                @((MarkupString)Preview)
+            <div>
+                    @((MarkupString)Markdown.ToHtml(fileContent))
             </div>
-            </MarkdownEditorBase>
         }
     </div>
 </div>
@@ -101,5 +98,6 @@
             File.WriteAllText(selectedFile, fileContent);
             selectedFile = null;
         }
+        
 
 }
