@@ -21,7 +21,7 @@
     ?
 </button>
 
-<Confirm @ref="MarkdownSheet" ConfirmationChanged="ConfirmMarkdownUnderstandClick"
+<Confirm @ref="MarkdownSheet" ConfirmationChanged="ConfirmMarkdownSheetClick"
          ConfirmationMessage=@("Do you understand how to use Markdown?")
 ConfirmationTitle=@("Markdown Sheet")
 ConfirmationButton=@("Open Full Sheet")>
@@ -61,7 +61,7 @@ ConfirmationButton=@("Open Full Sheet")>
     {
         MarkdownSheet.Show();
     }
-    private void ConfirmMarkdownUnderstandClick(bool ConfirmClick)
+    private void ConfirmMarkdownSheetClick(bool ConfirmClick)
     {
         if(ConfirmClick)
         {

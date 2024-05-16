@@ -27,10 +27,6 @@ namespace BagOfManyThings.Components.Boards
         {
             return  Path.Combine(_env.ContentRootPath, "DMData");
         }
-        public string GetRootDirectoryPath()
-        {
-            return _env.ContentRootPath;
-        }
 
         public void CreateUserDirectory(string userId) //creates a UserDirectory in DMData (Create Campaign basically)
         {
