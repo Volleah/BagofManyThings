@@ -1,0 +1,36 @@
+﻿@page "/Boards/MarkdownSheet"
+@rendermode InteractiveServer
+
+@using Markdig
+@using System.IO
+
+@inject FileService FileSystem
+
+<h3>Markdown Playground</h3>
+
+<div class="container">
+<div class="left-container">
+    <textarea class="form-control" @bind="SheetContent"></textarea>
+</div>
+
+<div class="right-container">
+    @((MarkupString)Markdown.ToHtml(SheetContent))
+</div>
+</div>
+@code {
+    private string? SheetContent;
+    private readonly IWebHostEnvironment env;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        ResetSheetContent();
+    }
+    private void ResetSheetContent()
+    {
+        string SheetPath = FileSystem.GetBaseDirectoryPath();
+        SheetPath = Path.Combine(SheetPath, "Misc");
+        SheetPath = Path.Combine(SheetPath, "MarkdownSheet.md");
+        SheetContent = File.ReadAllText(SheetPath);
+    }
+}

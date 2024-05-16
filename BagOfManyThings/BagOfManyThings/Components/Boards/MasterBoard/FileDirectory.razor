@@ -5,15 +5,27 @@
 @using BagOfManyThings.Components.Account
 @using BagOfManyThings.Data
 @using Microsoft.AspNetCore.Identity
+@using BagOfManyThings.Components.UIComponents
 
-@inject FileService FileService
+@inject FileService FileSystem
 @inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager NavigationManager
 
 
 <PageTitle>File System - Directory</PageTitle>
 
 <h3>Campaign Content</h3>
+
+<button class="btn btn-info btn-lg" title="Markdown Sheet Button" @onclick="() => MarkdownSheetClick() ">
+    ?
+</button>
+
+<Confirm @ref="MarkdownSheet" ConfirmationChanged="ConfirmMarkdownUnderstandClick"
+         ConfirmationMessage=@("Do you understand how to use Markdown?")
+ConfirmationTitle=@("Markdown Sheet")
+ConfirmationButton=@("Open Full Sheet")>
+</Confirm>
 
 <AuthorizeView>
     <NotAuthorized>
@@ -21,9 +33,16 @@
         <p class="text-danger">Please log into your account.</p>
     </NotAuthorized>
     <Authorized>
-
-        <FileTree basePath="@basePath"/>
-
+        @if (basePath != null)
+        {
+            <div class="directory-explorer">
+                <FileTree basePath="@basePath"/>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="CreateUserCampaign">Create Campaign Folder</button>
+        }
     </Authorized>
     <Authorizing>
         <p>Loading your board...</p>
@@ -35,15 +54,32 @@
     private ApplicationUser user = default!;
     private string? UserId;
     private string? basePath;
+    ConfirmBase MarkdownSheet { get; set; }
 
+
+    private void MarkdownSheetClick()
+    {
+        MarkdownSheet.Show();
+    }
+    private void ConfirmMarkdownUnderstandClick(bool ConfirmClick)
+    {
+        if(ConfirmClick)
+        {
+            NavigationManager.NavigateTo("Boards/MarkdownSheet");
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         var authestate = await authenticationStateProvider.GetAuthenticationStateAsync();
         var user = (authestate).User;
         UserId = user.Claims.FirstOrDefault().Value;
-        basePath = FileService.GetUserDirectoryPath(UserId);
+        basePath = FileSystem.GetUserDirectoryPath(UserId);
     }
 
-
+    private void CreateUserCampaign()
+    {
+         FileSystem.CreateUserDirectory(UserId);
+         NavigationManager.NavigateTo("/Boards/MasterBoard/FileDirectory");
+    }
 }

@@ -51,20 +51,6 @@ h1:focus {
 }
 
 
-.folder-icon, .file-icon {
-    font-size: 0.5em;
-    margin-right: 5px; 
-}
-
-
-    .folder-icon::before {
-        content: "📁"; /* Unicode for folder icon */
-    }
-
-    .file-icon::before {
-        content: "🗒"; /* Unicode for file icon */
-    }
-
 .row {
     display: flex;
     flex-direction: row; /* Arrange items horizontally */
@@ -74,7 +60,66 @@ h1:focus {
 }
 
 .item-div {
-    margin-left:30px; 
-    margin-top:5px; 
-    white-space:nowrap;
+    margin-left: 30px;
+    margin-top: 5px;
+    white-space: nowrap;
+    border: 1px solid;
+    border-radius: 2px;
+    padding:2px;
+    border-left-style:inset;
+    border-left-width:thick;
+    width:max-content;
+    max-height:auto;
+}
+
+
+.directory-explorer {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    overflow: scroll;
+    width:100%;
+}
+
+
+.directory-read-box, .directory-edit-box {
+    padding: 2rem;
+}
+.directory-edit-box {
+    width:50rem;
+    height:fit-content;
+    height: 50%;
+}
+.directory-read-box {
+    background-color: #f9f5d7;
+    border: 2px solid #282828;
+    border-radius: 2px;
+}
+
+.btn {
+    border-radius: 1px 2px;
+}
+
+.container {
+    display: table;
+    width: 100%;
+}
+
+.left-container {
+    background-color: #f9f5d7;
+    border: 2px solid #282828;
+    border-radius: 2px;
+    position: absolute;
+    left: 20rem;
+    width: 40rem;
+    height:contain;
+}
+
+.right-container {
+    background-color: #fbf1c7;
+    border: 2px solid #282828;
+    border-radius: 2px;
+    position: absolute;
+    right: 20rem;
+    width: 40rem;
 }

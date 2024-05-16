@@ -1,70 +1,79 @@
 ﻿
 @using System.IO
 @using BagOfManyThings.Components.Boards
+@using BagOfManyThings.Components.UIComponents
 @using Markdig
 
+@inject NavigationManager NavigationManager
 @inject FileService FileSystem
 
-
-
+<Confirm @ref="DeleteConfirmation" ConfirmationChanged="ConfirmDeleteClick"
+         ConfirmationMessage=@($"Are you sure you want to delete \"{Path.GetFileName(basePath)}\"")>
+</Confirm>
 <div>
-    <div class="border-rounded">
+    <div>
         @if (Directory.Exists(basePath))
         {
-            <input @bind="folderName" name="Name"/>
-
-                <button class="btn btn-success btn-sm" title="Add New File" @onclick="() => FileSystem.CreateMarkdownFileAsync(basePath, folderName)">
-                    <!--!-->
+            <div class="item-div">
+                📁@Path.GetFileName(basePath);
+            <button class="btn btn-danger btn-sm" title="Delete" @onclick="() => DeleteClick() ">
+                ❌
+                </button>
+                <button class="btn btn-success btn-sm" title="Add New File" @onclick="() => FileSystem.CreateMarkdownFileAsync(basePath, NewFolderName)">
                 ➕🗒
             </button>
-            <button class="btn btn-success btn-sm" title="Add New Folder" @onclick="() => FileSystem.CreateFolderInDirectory(basePath, folderName)">
-                <!--!-->
+            <button class="btn btn-success btn-sm" title="Add New Folder" @onclick="() => FileSystem.CreateFolderInDirectory(basePath, NewFolderName)">
                 ➕📁
             </button>
-            <ul class="file-tree">
+            </div>
+            <ul style="list-style-type:none;">
                 @foreach (var item in Directory.EnumerateFileSystemEntries(basePath))
                 {
-                    <li>
-                        @if (Directory.Exists(item))
+                    <li style="list-style-type:none;">
+                        @if (File.Exists(item)) 
                         {
+
                             <div class="item-div">
-                                @Path.GetFileName(item)
-                            <FileTree basePath="@item" />
+                                🗒@Path.GetFileNameWithoutExtension(item);
+                                <button class="btn btn-sm btn-danger" title="Delete" @onclick="() => DeleteClick()">
+                                    ❌
+                                </button>
+                                <button class="btn btn-sm btn-warning" title="Edit" @onclick="() => EditFile(item)">
+                                    ✎
+                                </button>
+                                <button class="btn btn-sm btn-info" title="Read" @onclick="() => ReadFile(item)">
+                                    📜
+                                </button>
                             </div>
-                        }
-                        else
-                        {
-                            <div class="item-div">
-                                @Path.GetFileName(item)
-                            <button class="btn-link" @onclick="() => EditFile(item)">Edit</button>
-                            <button class="btn-info" @onclick="() => ReadFile(item)">Read</button>
+                            <div>
+                                @if (selectedFile != null)
+                                {
+                                    <div class="directory-edit-box">
+                                        <textarea class="form-control" @bind="fileContent"></textarea>
+                                        <button class="btn btn-primary" @onclick="SaveFile">🖫</button>
+                                    </div>
+                                }
+
+                                @if (showPreview && fileContent != null)
+                                {
+                                    <div class="directory-read-box">
+                                        @((MarkupString)Markdown.ToHtml(fileContent))
+                                    </div>
+                                }
                             </div>
 
+                        }
+                        else if (Directory.Exists(item))
+                        {
+                            <FileTree basePath="@item"/>
                         }
                     </li>
                 }
             </ul>
         }
-        else
-        {
-            <p>Directory not found.</p>
-        }
-    </div>
-    <div class="border-rounded">
-        @if (selectedFile != null)
-        {
-            <textarea class="form-control" @bind="fileContent"></textarea>
-            <button class="btn btn-primary" @onclick="SaveFile">Save</button>
-        }
-
-        @if (showPreview)
-        {
-            <div>
-                    @((MarkupString)Markdown.ToHtml(fileContent))
-            </div>
-        }
     </div>
 </div>
+
 
 
 @code {
@@ -73,32 +82,50 @@
     [Parameter]
     public string? basePath { get; set; }
 
-    private string folderName = "New Name";
-
+    private string NewFolderName = "Untitled";
+    ConfirmBase DeleteConfirmation { get; set; }
     private string? selectedFile;
     private string? fileContent;
     private bool showPreview = false; 
 
 
 
-        private void EditFile(string filePath)
+    private void DeleteClick()
+    {
+        DeleteConfirmation.Show();
+    }
+    private void ConfirmDeleteClick(bool deleteConfirmed)
+    {
+        if(deleteConfirmed)
         {
-            selectedFile = filePath;
-            fileContent = File.ReadAllText(filePath);
+            if (Directory.Exists(basePath))
+                FileSystem.DeleteDirectory(basePath);
+            else if(File.Exists(basePath))
+                File.Delete(basePath);
+            NavigationManager.Refresh(true);
         }
+    }
 
-        private void ReadFile(string filePath)
-        {
-            fileContent = File.ReadAllText(filePath);
+    private void EditFile(string filePath)
+    {
+        selectedFile = filePath;
+        fileContent = File.ReadAllText(filePath);
+    }
+
+    private void ReadFile(string filePath)
+    {
+        fileContent = File.ReadAllText(filePath);
+        if(fileContent!=null)
             showPreview = !showPreview;//toggle
-        }
-        private void SaveFile()
-        {
-            if (selectedFile == null)
-                return;
-            File.WriteAllText(selectedFile, fileContent);
-            selectedFile = null;
-        }
+    }
+    private void SaveFile()
+    {
+        if (selectedFile == null)
+            return;
+        File.WriteAllText(selectedFile, fileContent);
+        selectedFile = null;
+
+    }
         
 
 }

@@ -19,9 +19,17 @@ namespace BagOfManyThings.Components.Boards
 
         public string GetUserDirectoryPath(string userId)
         {
-            var basePath = Path.Combine(_env.ContentRootPath, "DMData");
+            var basePath = GetBaseDirectoryPath();
             var userDirectory = Path.Combine(basePath, userId);
             return userDirectory;
+        }
+        public string GetBaseDirectoryPath()
+        {
+            return  Path.Combine(_env.ContentRootPath, "DMData");
+        }
+        public string GetRootDirectoryPath()
+        {
+            return _env.ContentRootPath;
         }
 
         public void CreateUserDirectory(string userId) //creates a UserDirectory in DMData (Create Campaign basically)
@@ -38,9 +46,10 @@ namespace BagOfManyThings.Components.Boards
 
         public async Task CreateFileInDirectoryAsync(string directoryPath, string fileName, string content)
         {
+            if (fileName == null)
+                throw new ArgumentNullException("FileName is null");
             if (!Directory.Exists(directoryPath))
                 throw new DirectoryNotFoundException($"Directory not found: {directoryPath}");
-
             var filePath = Path.Combine(directoryPath, fileName);
 
             if (File.Exists(filePath))
@@ -71,14 +80,9 @@ namespace BagOfManyThings.Components.Boards
             filePath = Path.Combine(filePath, fileName + ".md");
             await File.WriteAllTextAsync(filePath, null);
         }
-        public void DeleteUserDirectory(string userId) //deletes campaign
+        public void DeleteDirectory(string basePath) //deletes directory
         {
-            var userDirectoryPath = GetUserDirectoryPath(userId);
-
-            if (Directory.Exists(userDirectoryPath))
-            {
-                Directory.Delete(userDirectoryPath, true);
-            }
+            Directory.Delete(basePath, true);
         }
     }
 }

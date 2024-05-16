@@ -54,7 +54,6 @@
         }
         else
         {
-            Console.WriteLine("UserId is {0}", UserId);
             FileService.CreateUserDirectory(UserId);
             NavigationManager.NavigateTo("/Boards/MasterBoard/FileDirectory");
         }
