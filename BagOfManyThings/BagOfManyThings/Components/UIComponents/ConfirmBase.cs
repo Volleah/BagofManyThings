@@ -16,6 +16,10 @@ namespace BagOfManyThings.Components.UIComponents
         public string ConfirmationButton { get; set; } = "Delete";
         [Parameter]
         public string CancelButton { get; set; } = "Cancel";
+        [Parameter]
+        public bool HasInput { get; set; } = false;
+        [Parameter]
+        public string Input { get; set; } = "Untitled";
         public void Show()
         {
             ShowConfirmation = true;

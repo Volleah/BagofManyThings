@@ -10,6 +10,10 @@
 <Confirm @ref="DeleteConfirmation" ConfirmationChanged="ConfirmDeleteClick"
          ConfirmationMessage=@($"Are you sure you want to delete \"{Path.GetFileName(basePath)}\"")>
 </Confirm>
+<Confirm @ref="CreateItemConfirmation" ConfirmationChanged="ConfirmCreateClick"
+    ConfirmationMessage=@("Please name your item:")>
+<
+</Confirm>
 <div>
     <div>
         @if (Directory.Exists(basePath))
@@ -19,7 +23,7 @@
             <button class="btn btn-danger btn-sm" title="Delete" @onclick="() => DeleteClick() ">
                 ❌
                 </button>
-                <button class="btn btn-success btn-sm" title="Add New File" @onclick="() => FileSystem.CreateMarkdownFileAsync(basePath, NewFolderName)">
+                <button class="btn btn-success btn-sm" title="Add New File" @onclick="() => CreateClick()">
                 ➕🗒
             </button>
             <button class="btn btn-success btn-sm" title="Add New Folder" @onclick="() => FileSystem.CreateFolderInDirectory(basePath, NewFolderName)">
@@ -82,8 +86,10 @@
     [Parameter]
     public string? basePath { get; set; }
 
-    private string NewFolderName = "Untitled";
+    private string newItemName = "Untitled";
     private ConfirmBase DeleteConfirmation { get; set; }
+    private ConfirmBase CreateItemConfirmation { get; set; }
+    private ConfirmBase CreateFolderConfirmation { get; set; }
     private string? selectedFile;
     private string? fileContent;
     private bool showPreview = false; 
@@ -126,6 +132,21 @@
         selectedFile = null;
 
     }
-        
+    private void CreateItemClick()
+    {
+        CreateItemConfirmation.Show();
+    }
+    private void ConfirmCreateClick(bool CreateItemConfirmed)
+    {
+        if(CreateItemConfirmed)
+        {
+            FileSystem.CreateMarkdownFileAsync(basePath, newItemName);
+        }
+    }
+    private void ConfirmCreateFolderClick(bool CreateFolderConfirmed)
+    {
+        if()
+    }
+
 
 }
