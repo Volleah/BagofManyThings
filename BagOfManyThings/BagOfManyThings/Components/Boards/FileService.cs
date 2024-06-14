@@ -76,9 +76,5 @@ namespace BagOfManyThings.Components.Boards
             filePath = Path.Combine(filePath, fileName + ".md");
             await File.WriteAllTextAsync(filePath, null);
         }
-        public void DeleteDirectory(string basePath) //deletes directory
-        {
-            Directory.Delete(basePath, true);
-        }
     }
 }

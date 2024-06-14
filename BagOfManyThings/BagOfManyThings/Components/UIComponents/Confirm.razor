@@ -1,4 +1,6 @@
 ﻿@inherits ConfirmBase
+@using BagOfManyThings.Components.Account.Shared
+
 @if (ShowConfirmation)
 {
     <div class="modal fade show d-block" id="exampleModal" tabindex="-1" role="dialog">
@@ -14,8 +16,14 @@
                 <div class="modal-body">
                     @ConfirmationMessage
                     @if(HasInput){
-                    <br>
-                    //input but check if it already exists use validation control
+                        @if(errorMessage!=null)
+                        {
+                            <div class="validation-message">
+                                @errorMessage
+                                </div>
+
+                        }
+                        <InputText @bind-Value="InputText" class="form-control" aria-required="true"/>
                     }
                 </div>
                 <div class="modal-footer">

@@ -10,23 +10,30 @@
 <Confirm @ref="DeleteConfirmation" ConfirmationChanged="ConfirmDeleteClick"
          ConfirmationMessage=@($"Are you sure you want to delete \"{Path.GetFileName(basePath)}\"")>
 </Confirm>
-<Confirm @ref="CreateItemConfirmation" ConfirmationChanged="ConfirmCreateClick"
-    ConfirmationMessage=@("Please name your item:")>
-<
+<Confirm @ref="CreateMdConfirmation" ConfirmationChanged="ConfirmCreateMdClick" HasInput=true
+    ConfirmationMessage="Please name your file:"
+         ConfirmationTitle="Create Markdown File"
+        ConfirmationButton="Confirm">
 </Confirm>
+<Confirm @ref="CreateFolderConfirmation" ConfirmationChanged="ConfirmCreateFolderClick" HasInput=true
+    ConfirmationMessage="Please name your folder:"
+ConfirmationTitle="Create Folder"
+ConfirmationButton="Confirm">
+</Confirm>
+
 <div>
     <div>
         @if (Directory.Exists(basePath))
         {
             <div class="item-div">
-                📁@Path.GetFileName(basePath);
+                📁@Path.GetFileName(basePath)
             <button class="btn btn-danger btn-sm" title="Delete" @onclick="() => DeleteClick() ">
                 ❌
                 </button>
-                <button class="btn btn-success btn-sm" title="Add New File" @onclick="() => CreateClick()">
+                <button class="btn btn-success btn-sm" title="Add New Markdown File" @onclick="() => CreateMdClick()">
                 ➕🗒
             </button>
-            <button class="btn btn-success btn-sm" title="Add New Folder" @onclick="() => FileSystem.CreateFolderInDirectory(basePath, NewFolderName)">
+            <button class="btn btn-success btn-sm" title="Add New Folder" @onclick="() => CreateFolderClick()">
                 ➕📁
             </button>
             </div>
@@ -38,7 +45,7 @@
                         {
 
                             <div class="item-div">
-                                🗒@Path.GetFileNameWithoutExtension(item);
+                                🗒@Path.GetFileNameWithoutExtension(item)
                                 <button class="btn btn-sm btn-danger" title="Delete" @onclick="() => DeleteClick()">
                                     ❌
                                 </button>
@@ -86,9 +93,8 @@
     [Parameter]
     public string? basePath { get; set; }
 
-    private string newItemName = "Untitled";
     private ConfirmBase DeleteConfirmation { get; set; }
-    private ConfirmBase CreateItemConfirmation { get; set; }
+    private ConfirmBase CreateMdConfirmation { get; set; }
     private ConfirmBase CreateFolderConfirmation { get; set; }
     private string? selectedFile;
     private string? fileContent;
@@ -105,8 +111,8 @@
         if(deleteConfirmed)
         {
             if (Directory.Exists(basePath))
-                FileSystem.DeleteDirectory(basePath);
-            else if(File.Exists(basePath))
+                Directory.Delete(basePath, true);
+            else
                 File.Delete(basePath);
             NavigationManager.Refresh(true);
         }
@@ -132,20 +138,64 @@
         selectedFile = null;
 
     }
-    private void CreateItemClick()
+    private void CreateMdClick()
     {
-        CreateItemConfirmation.Show();
+        CreateMdConfirmation.Show();
+    }  
+    private void CreateFolderClick()
+    {
+        CreateFolderConfirmation.Show();
     }
-    private void ConfirmCreateClick(bool CreateItemConfirmed)
+
+    private void ConfirmCreateMdClick(bool CreateMdConfirmed)
     {
-        if(CreateItemConfirmed)
+        if(CreateMdConfirmed)
         {
-            FileSystem.CreateMarkdownFileAsync(basePath, newItemName);
+            if (Path.Exists(Path.Combine(basePath, CreateMdConfirmation.InputText + ".md")))
+            {
+                CreateMdConfirmation.errorMessage = "Path already exists.";
+                CreateMdConfirmation.Show();
+            }
+            else
+            {
+                CreateMdConfirmation.errorMessage = null;
+                FileSystem.CreateMarkdownFileAsync(basePath, CreateMdConfirmation.InputText);
+                NavigationManager.Refresh(true);
+            }
+
         }
+        else
+        {
+            CreateMdConfirmation.errorMessage = null;
+            CreateMdConfirmation.InputText = "Untitled";
+        }
+
     }
     private void ConfirmCreateFolderClick(bool CreateFolderConfirmed)
     {
-        if()
+        if(CreateFolderConfirmed)
+        {
+            if (Path.Exists(Path.Combine(basePath, CreateFolderConfirmation.InputText)))
+            {
+                CreateFolderConfirmation.errorMessage = "Path already exists.";
+                CreateFolderConfirmation.Show();
+            }
+            else
+            {
+                CreateFolderConfirmation.errorMessage = null;
+                FileSystem.CreateFolderInDirectory(basePath, CreateFolderConfirmation.InputText);
+                CreateFolderConfirmation.InputText = "Untitled";
+                NavigationManager.Refresh(true);
+
+            }
+
+        }
+        else
+        {
+            CreateFolderConfirmation.errorMessage = null;
+            CreateFolderConfirmation.InputText = "Untitled";
+        }
+
     }
 
 

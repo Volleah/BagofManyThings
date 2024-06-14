@@ -19,7 +19,8 @@ namespace BagOfManyThings.Components.UIComponents
         [Parameter]
         public bool HasInput { get; set; } = false;
         [Parameter]
-        public string Input { get; set; } = "Untitled";
+        public string InputText { get; set; } = "Untitled";
+        public string? errorMessage { get; set; }
         public void Show()
         {
             ShowConfirmation = true;
