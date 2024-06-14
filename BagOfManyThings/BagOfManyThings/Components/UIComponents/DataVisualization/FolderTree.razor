@@ -2,13 +2,12 @@
 @using System.IO
 @using BagOfManyThings.Components.Boards
 @using BagOfManyThings.Components.UIComponents
-@using Markdig
 
 @inject NavigationManager NavigationManager
 @inject FileService FileSystem
 
 <Confirm @ref="DeleteConfirmation" ConfirmationChanged="ConfirmDeleteClick"
-         ConfirmationMessage=@($"Are you sure you want to delete \"{Path.GetFileName(basePath)}\"")>
+         ConfirmationMessage=@($"Are you sure you want to delete \"{Path.GetFileName(folderPath)}\"? This WILL delete all nested files and folders.")>
 </Confirm>
 <Confirm @ref="CreateMdConfirmation" ConfirmationChanged="ConfirmCreateMdClick" HasInput=true
     ConfirmationMessage="Please name your file:"
@@ -22,11 +21,10 @@ ConfirmationButton="Confirm">
 </Confirm>
 
 <div>
-    <div>
-        @if (Directory.Exists(basePath))
+        @if (Directory.Exists(folderPath))
         {
             <div class="item-div">
-                📁@Path.GetFileName(basePath)
+                📁@Path.GetFileName(folderPath)
             <button class="btn btn-danger btn-sm" title="Delete" @onclick="() => DeleteClick() ">
                 ❌
                 </button>
@@ -38,52 +36,23 @@ ConfirmationButton="Confirm">
             </button>
             </div>
             <ul style="list-style-type:none;">
-                @foreach (var item in Directory.EnumerateFileSystemEntries(basePath))
+                @foreach (string item in Directory.EnumerateFileSystemEntries(folderPath))
                 {
                     <li style="list-style-type:none;">
-                        @if (File.Exists(item)) 
+                    @if (File.Exists(item))
+                    {
+                        <MarkdownFile itemPath=@item/>
+                    }
+                    else if (Directory.Exists(item))
                         {
-
-                            <div class="item-div">
-                                🗒@Path.GetFileNameWithoutExtension(item)
-                                <button class="btn btn-sm btn-danger" title="Delete" @onclick="() => DeleteClick()">
-                                    ❌
-                                </button>
-                                <button class="btn btn-sm btn-warning" title="Edit" @onclick="() => EditFile(item)">
-                                    ✎
-                                </button>
-                                <button class="btn btn-sm btn-info" title="Read" @onclick="() => ReadFile(item)">
-                                    📜
-                                </button>
-                            </div>
-                            <div>
-                                @if (selectedFile != null)
-                                {
-                                    <div class="directory-edit-box">
-                                        <textarea class="form-control" @bind="fileContent"></textarea>
-                                        <button class="btn btn-primary" @onclick="SaveFile">🖫</button>
-                                    </div>
-                                }
-
-                                @if (showPreview && fileContent != null)
-                                {
-                                    <div class="directory-read-box">
-                                        @((MarkupString)Markdown.ToHtml(fileContent))
-                                    </div>
-                                }
-                            </div>
-
-                        }
-                        else if (Directory.Exists(item))
-                        {
-                            <FileTree basePath="@item"/>
+                            <FolderTree folderPath=@item/>
                         }
                     </li>
                 }
             </ul>
         }
     </div>
-</div>
+
 
 
 
@@ -91,16 +60,11 @@ ConfirmationButton="Confirm">
 
 
     [Parameter]
-    public string? basePath { get; set; }
+    public string? folderPath { get; set; }
 
     private ConfirmBase DeleteConfirmation { get; set; }
     private ConfirmBase CreateMdConfirmation { get; set; }
     private ConfirmBase CreateFolderConfirmation { get; set; }
-    private string? selectedFile;
-    private string? fileContent;
-    private bool showPreview = false; 
-
-
 
     private void DeleteClick()
     {
@@ -109,35 +73,12 @@ ConfirmationButton="Confirm">
     private void ConfirmDeleteClick(bool deleteConfirmed)
     {
         if(deleteConfirmed)
-        {
-            if (Directory.Exists(basePath))
-                Directory.Delete(basePath, true);
-            else
-                File.Delete(basePath);
+        {   
+            Directory.Delete(folderPath, true);
             NavigationManager.Refresh(true);
         }
     }
 
-    private void EditFile(string filePath)
-    {
-        selectedFile = filePath;
-        fileContent = File.ReadAllText(filePath);
-    }
-
-    private void ReadFile(string filePath)
-    {
-        fileContent = File.ReadAllText(filePath);
-        if(fileContent!=null)
-            showPreview = !showPreview;//toggle
-    }
-    private void SaveFile()
-    {
-        if (selectedFile == null)
-            return;
-        File.WriteAllText(selectedFile, fileContent);
-        selectedFile = null;
-
-    }
     private void CreateMdClick()
     {
         CreateMdConfirmation.Show();
@@ -151,7 +92,7 @@ ConfirmationButton="Confirm">
     {
         if(CreateMdConfirmed)
         {
-            if (Path.Exists(Path.Combine(basePath, CreateMdConfirmation.InputText + ".md")))
+            if (Path.Exists(Path.Combine(folderPath, CreateMdConfirmation.InputText + ".md")))
             {
                 CreateMdConfirmation.errorMessage = "Path already exists.";
                 CreateMdConfirmation.Show();
@@ -159,7 +100,7 @@ ConfirmationButton="Confirm">
             else
             {
                 CreateMdConfirmation.errorMessage = null;
-                FileSystem.CreateMarkdownFileAsync(basePath, CreateMdConfirmation.InputText);
+                FileSystem.CreateMarkdownFileAsync(folderPath, CreateMdConfirmation.InputText);
                 NavigationManager.Refresh(true);
             }
 
@@ -175,7 +116,7 @@ ConfirmationButton="Confirm">
     {
         if(CreateFolderConfirmed)
         {
-            if (Path.Exists(Path.Combine(basePath, CreateFolderConfirmation.InputText)))
+            if (Path.Exists(Path.Combine(folderPath, CreateFolderConfirmation.InputText)))
             {
                 CreateFolderConfirmation.errorMessage = "Path already exists.";
                 CreateFolderConfirmation.Show();
@@ -183,7 +124,7 @@ ConfirmationButton="Confirm">
             else
             {
                 CreateFolderConfirmation.errorMessage = null;
-                FileSystem.CreateFolderInDirectory(basePath, CreateFolderConfirmation.InputText);
+                FileSystem.CreateFolderInDirectory(folderPath, CreateFolderConfirmation.InputText);
                 CreateFolderConfirmation.InputText = "Untitled";
                 NavigationManager.Refresh(true);
 

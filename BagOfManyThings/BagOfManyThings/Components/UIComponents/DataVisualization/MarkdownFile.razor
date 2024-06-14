@@ -1,0 +1,92 @@
+﻿@using System.IO
+@using BagOfManyThings.Components.Boards
+@using BagOfManyThings.Components.UIComponents
+@using Markdig
+
+@inject NavigationManager NavigationManager
+@inject FileService FileSystem
+
+
+@if (File.Exists(itemPath)&&Path.GetExtension(itemPath)==".md")
+{
+    <Confirm @ref="DeleteConfirmation" ConfirmationChanged="ConfirmDeleteClick"
+             ConfirmationMessage=@($"Are you sure you want to delete \"{Path.GetFileName(itemPath)}\"")>
+    </Confirm>
+    <div class="item-div">
+        🗒@Path.GetFileNameWithoutExtension(itemPath)
+        <button class="btn btn-sm btn-danger" title="Delete" @onclick="() => DeleteClick()">
+            ❌
+        </button>
+        <button class="btn btn-sm btn-warning" title="Edit" @onclick="() => EditFile()">
+            ✎
+        </button>
+        <button class="btn btn-sm btn-info" title="Read" @onclick="() => ReadFile()">
+            📜
+        </button>
+    </div>
+    <div>
+        @if (editFile)
+        {
+            <div class="directory-edit-box">
+                <textarea class="form-control" @bind="fileContent"></textarea>
+                <button class="btn btn-primary" @onclick="SaveFile">🖫</button>
+            </div>
+        }
+
+        @if (showPreview && fileContent != null)
+        {
+            <div class="directory-read-box">
+                @((MarkupString)Markdown.ToHtml(fileContent))
+            </div>
+        }
+    </div>
+
+}
+
+@code {
+    [Parameter]
+    public string? itemPath { get; set; }
+
+
+    private ConfirmBase DeleteConfirmation { get; set; }
+    private string? fileContent;
+    private bool editFile = false;
+    private bool showPreview = false;
+
+    private void DeleteClick()
+    {
+        DeleteConfirmation.Show();
+    }
+    private void ConfirmDeleteClick(bool deleteConfirmed)
+    {
+        if (deleteConfirmed)
+        {
+            File.Delete(itemPath);
+            NavigationManager.Refresh(true);
+        }
+    }
+
+    private void EditFile()
+    {
+        editFile = true;
+        fileContent = File.ReadAllText(itemPath);
+    }
+
+    private void ReadFile()
+    {
+        fileContent = File.ReadAllText(itemPath);
+        if (fileContent != null)
+            showPreview = !showPreview;//toggle
+    }
+    private void SaveFile()
+    {
+        if (!editFile || itemPath == null)
+        {
+            return;
+        }
+        File.WriteAllText(itemPath, fileContent);
+        editFile = false;
+    }
+
+
+}

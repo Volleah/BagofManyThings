@@ -36,7 +36,7 @@ ConfirmationButton=@("Open Full Sheet")>
         @if (basePath != null)
         {
             <div class="directory-explorer">
-                <FileTree basePath="@basePath"/>
+                <BagOfManyThings.Components.UIComponents.DataVisualization.FolderTree folderPath=@basePath/>
             </div>
         }
         else
