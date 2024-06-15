@@ -124,7 +124,3 @@ h1:focus {
     right:2rem;
     width: 40rem;
 }
-#text-left {
-    this.style.height = "";
-    this.style.height = this.scrollHeight + "px";
-}
