@@ -7,20 +7,29 @@
 @inject FileService FileSystem
 
 <h3>Markdown Playground</h3>
-
+<button class="btn btn-sm btn-danger" title="Delete" @onclick="() => ResetSheetContent()">
+    ❌ Reset Markdown Sheet
+</button>
 <div class="container">
 <div class="left-container">
-    <textarea class="form-control" @bind="SheetContent"></textarea>
+        <textarea 
+        @onkeypress="@OnKeyPress"
+                  oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'
+                  style="height:100%; max-height:100%;"
+                  id="text-left" 
+        class="form-control" 
+        @bind="SheetContent"
+        />
+
 </div>
 
-<div class="right-container">
+<div @onkeypress="@OnKeyPress" id="text-right" class="right-container">
     @((MarkupString)Markdown.ToHtml(SheetContent))
 </div>
 </div>
 @code {
     private string? SheetContent;
     private readonly IWebHostEnvironment env;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,5 +41,9 @@
         SheetPath = Path.Combine(SheetPath, "Misc");
         SheetPath = Path.Combine(SheetPath, "MarkdownSheet.md");
         SheetContent = File.ReadAllText(SheetPath);
+    }
+    private async Task OnKeyPress()
+    {
+        StateHasChanged();
     }
 }

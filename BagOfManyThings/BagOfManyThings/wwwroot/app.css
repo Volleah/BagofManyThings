@@ -91,7 +91,7 @@ h1:focus {
     height: 50%;
 }
 .directory-read-box {
-    background-color: #f9f5d7;
+    background-color: #fbf1c7;
     border: 2px solid #282828;
     border-radius: 2px;
 }
@@ -110,16 +110,21 @@ h1:focus {
     border: 2px solid #282828;
     border-radius: 2px;
     position: absolute;
-    left: 20rem;
-    width: 40rem;
-    height:contain;
+    left:17rem;
+    width: 35rem;
+    height:max-content;
 }
+
 
 .right-container {
     background-color: #fbf1c7;
     border: 2px solid #282828;
     border-radius: 2px;
     position: absolute;
-    right: 20rem;
+    right:2rem;
     width: 40rem;
+}
+#text-left {
+    this.style.height = "";
+    this.style.height = this.scrollHeight + "px";
 }
