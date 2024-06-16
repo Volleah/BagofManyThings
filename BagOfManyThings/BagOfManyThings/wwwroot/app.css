@@ -84,12 +84,11 @@ h1:focus {
 
 .directory-read-box, .directory-edit-box {
     padding: 2rem;
-}
-.directory-edit-box {
-    width:50rem;
-    height:fit-content;
+    width: 50rem;
+    height: fit-content;
     height: 50%;
 }
+
 .directory-read-box {
     background-color: #fbf1c7;
     border: 2px solid #282828;

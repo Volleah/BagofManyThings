@@ -28,7 +28,9 @@
         @if (editFile)
         {
             <div class="directory-edit-box">
-                <textarea class="form-control" @bind="fileContent"></textarea>
+                <textarea class="form-control" @bind="fileContent"
+                          oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"' 
+                />
                 <button class="btn btn-primary" @onclick="SaveFile">🖫</button>
             </div>
         }
