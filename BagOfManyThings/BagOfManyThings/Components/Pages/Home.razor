@@ -1,11 +1,57 @@
-﻿@page "/"
+﻿@using BagOfManyThings.Data
+@page "/"
+
+@inject NavigationManager NavigationManager
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello traveler!</h1>
 
-<h3>Welcome to the bag of many things!</h3>
-<p>Bag of Many Things is a versatile Dungeon Master tool designed to streamline the organization and sharing of notes, catering to users in various roles. It offers a user-friendly Markdown editor, enabling seamless creation and formatting of text. The application also includes a robust file system for efficient storage and retrieval of notes.
-   <br />
-    The project emphasizes user experience, while some features like a session functionality are still in the ideation stage, the project demonstrates significant progress and promises to be a valuable tool for note-taking and collaboration.
-</p>
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mt-5">Welcome to the Bag of Many Things!</h1>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12 col-md-6 offset-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <p class="card-text">
+                        Bag of Many Things is a versatile Dungeon Master tool designed to streamline the organization and sharing of notes, catering to users in various roles.
+                    </p>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <i class="bi bi-clipboard-check"></i>
+                            <strong>Campaign Organization:</strong>  Structure your campaign notes, session plans, NPC details, locations, and lore in a centralized platform.
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-file-earmark-text"></i>
+                            <strong>Markdown Editor:</strong> Create and format text easily with Markdown support.
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-folder-fill"></i>
+                            <strong>Robust File System:</strong> Store and retrieve notes efficiently with a user-friendly file management system.
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-people-fill"></i>
+                            <strong>Collaboration:</strong>  Share specific notes with players, fostering a collaborative environment.
+                        </li>
+                        <li class="list-group-item">
+                            <i class="bi bi-shield-lock-fill"></i>
+                            <strong>Secure and User-Friendly:</strong> Benefit from secure user authentication and an intuitive interface.
+                        </li>
+                    </ul>
+                    <div class="text-center mt-3">
+                        <AuthorizeView>
+                            <Authorized>
+                            <a href="/Boards/MasterBoard" class="btn btn-primary btn-lg">Explore Now</a>
+                        </Authorized>
+                        <NotAuthorized>
+                            <a href="/Account/Login" class="btn btn-primary btn-lg">Login</a>
+                            <a href="/Account/Register" class="btn btn-primary btn-lg">Register</a>
+                        </NotAuthorized>
+                    </AuthorizeView>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
