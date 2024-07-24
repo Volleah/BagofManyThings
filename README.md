@@ -1,2 +1,2 @@
 # Bag of Many Things
-^A table-top RPG tool by Ayhm Muati^
+<sup>A note taking tool made in Blazor by Ayham Muati</sup>
